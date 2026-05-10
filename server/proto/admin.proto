@@ -1,0 +1,68 @@
+syntax = "proto3";
+package admin;
+
+service AdminService {
+    rpc CreateUser(CreateUserRequest)        returns (AdminResponse);
+    rpc DeleteUser(DeleteUserRequest)        returns (AdminResponse);
+    rpc UpdateUser(UpdateUserRequest)        returns (AdminResponse);
+    rpc ListUsers(ListUsersRequest)          returns (ListUsersResponse);
+    rpc DeleteTopic(AdminDeleteTopicRequest) returns (AdminResponse);
+    rpc ListAllTopics(ListAllTopicsRequest)  returns (ListAllTopicsResponse);
+}
+
+message CreateUserRequest {
+    string username = 1;
+    string password = 2;
+    string email    = 3;
+    string role     = 4;
+}
+
+message DeleteUserRequest {
+    string user_id             = 1;
+    string requesting_user_id  = 2;
+}
+
+message UpdateUserRequest {
+    string user_id      = 1;
+    string new_username = 2;
+    string new_password = 3;
+}
+
+message AdminDeleteTopicRequest {
+    string topic_id = 1;
+}
+
+message AdminResponse {
+    bool   success = 1;
+    string message = 2;
+}
+
+message User {
+    string user_id    = 1;
+    string username   = 2;
+    string email      = 3;
+    string role       = 4;
+    string created_at = 5;
+}
+
+message AdminTopic {
+    string topic_id  = 1;
+    string name      = 2;
+    string user_id   = 3;
+    string username  = 4;
+    string parent_id = 5;
+}
+
+message ListUsersRequest {}
+
+message ListUsersResponse {
+    repeated User users = 1;
+}
+
+message ListAllTopicsRequest {
+    string user_id = 1;
+}
+
+message ListAllTopicsResponse {
+    repeated AdminTopic topics = 1;
+}

@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+
+  mongo1:
+    image: mongo:7
+    container_name: mongo1
+    ports:
+      - "27020:27017"
+    command: mongod --replSet rs0 --bind_ip_all
+    volumes:
+      - mongo1_data:/data/db
+      - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    networks:
+      - mongo_net
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo2:
+    image: mongo:7
+    container_name: mongo2
+    ports:
+      - "27021:27017"
+    command: mongod --replSet rs0 --bind_ip_all
+    volumes:
+      - mongo2_data:/data/db
+    networks:
+      - mongo_net
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo3:
+    image: mongo:7
+    container_name: mongo3
+    ports:
+      - "27022:27017"
+    command: mongod --replSet rs0 --bind_ip_all
+    volumes:
+      - mongo3_data:/data/db
+    networks:
+      - mongo_net
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo-init:
+    image: mongo:7
+    container_name: mongo-init
+    depends_on:
+      mongo1:
+        condition: service_healthy
+      mongo2:
+        condition: service_healthy
+      mongo3:
+        condition: service_healthy
+    networks:
+      - mongo_net
+    entrypoint: >
+      mongosh --host mongo1:27017 --eval "
+        rs.initiate({
+          _id: 'rs0',
+          members: [
+            { _id: 0, host: 'mongo1:27017', priority: 2 },
+            { _id: 1, host: 'mongo2:27017', priority: 1 },
+            { _id: 2, host: 'mongo3:27017', priority: 1 }
+          ]
+        });
+        print('Replica set iniciado');
+      "
+    restart: on-failure
+
+volumes:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:
+
+networks:
+  mongo_net:
+    driver: bridge

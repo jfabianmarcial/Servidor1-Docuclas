@@ -1,0 +1,25 @@
+[package]
+name    = "doc-service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common          = { path = "../../crates/common" }
+proto-gen       = { path = "../../crates/proto-gen" }
+pdf-classifier  = { path = "../../crates/pdf-classifier" }
+
+tonic           = { workspace = true }
+prost           = { workspace = true }
+tokio           = { workspace = true }
+mongodb         = { workspace = true }
+serde           = { workspace = true }
+serde_json      = { workspace = true }
+tracing         = { workspace = true }
+tracing-subscriber = { workspace = true }
+uuid            = { workspace = true }
+chrono          = { workspace = true }
+dotenv          = { workspace = true }
+anyhow          = { workspace = true }
+futures         = { workspace = true }
+bytes           = { workspace = true }
+reqwest         = { version = "0.12", features = ["json"] }

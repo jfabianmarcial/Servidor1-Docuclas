@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  envoy:
+    image: envoyproxy/envoy:v1.29-latest
+    container_name: envoy-gateway
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    command: /usr/local/bin/envoy -c /etc/envoy/envoy.yaml

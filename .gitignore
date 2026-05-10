@@ -1,0 +1,28 @@
+# Variables de entorno — credenciales sensibles
+server/.env
+client/.env
+database/.env
+classifier/.env
+
+# Rust — binarios compilados
+server/target/
+
+# Node — dependencias
+client/node_modules/
+
+# Python — entorno virtual
+classifier/venv/
+classifier/__pycache__/
+classifier/*.pyc
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Agregar node_modules raíz al gitignore
+Add-Content -Path ".gitignore" -Value "node_modules/"
+Add-Content -Path ".gitignore" -Value "package-lock.json"
+Add-Content -Path ".gitignore" -Value "package.json"

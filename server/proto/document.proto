@@ -1,0 +1,60 @@
+syntax = "proto3";
+package document;
+
+service DocumentService {
+    rpc UploadDocument(UploadDocumentRequest)       returns (DocumentResponse);
+    rpc DownloadDocument(DownloadDocumentRequest)   returns (DownloadDocumentResponse);
+    rpc ListDocuments(ListDocumentsRequest)         returns (ListDocumentsResponse);
+    rpc DeleteDocument(DeleteDocumentRequest)       returns (DeleteDocumentResponse);
+}
+
+message UploadDocumentRequest {
+    string user_id  = 1;
+    string filename = 2;
+    bytes  content  = 3;
+}
+
+message DownloadDocumentRequest {
+    string document_id = 1;
+    string user_id     = 2;
+}
+
+message DownloadDocumentResponse {
+    string filename = 1;
+    bytes  content  = 2;
+    string message  = 3;
+}
+
+message DeleteDocumentRequest {
+    string document_id = 1;
+    string user_id     = 2;
+}
+
+message DeleteDocumentResponse {
+    bool   success = 1;
+    string message = 2;
+}
+
+message Document {
+    string document_id = 1;
+    string user_id     = 2;
+    string filename    = 3;
+    string topic_id    = 4;
+    string topic_name  = 5;
+    string uploaded_at = 6;
+}
+
+message DocumentResponse {
+    bool     success  = 1;
+    string   message  = 2;
+    Document document = 3;
+}
+
+message ListDocumentsRequest {
+    string user_id  = 1;
+    string topic_id = 2;
+}
+
+message ListDocumentsResponse {
+    repeated Document documents = 1;
+}

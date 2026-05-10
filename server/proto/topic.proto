@@ -1,0 +1,51 @@
+syntax = "proto3";
+package topic;
+
+service TopicService {
+    rpc CreateTopic(CreateTopicRequest)       returns (TopicResponse);
+    rpc CreateSubTopic(CreateSubTopicRequest) returns (TopicResponse);
+    rpc DeleteTopic(DeleteTopicRequest)       returns (DeleteTopicResponse);
+    rpc ListTopics(ListTopicsRequest)         returns (ListTopicsResponse);
+}
+
+message CreateTopicRequest {
+    string user_id = 1;
+    string name    = 2;
+}
+
+message CreateSubTopicRequest {
+    string user_id        = 1;
+    string parent_topic_id = 2;
+    string name           = 3;
+}
+
+message DeleteTopicRequest {
+    string topic_id = 1;
+    string user_id  = 2;
+}
+
+message DeleteTopicResponse {
+    bool   success = 1;
+    string message = 2;
+}
+
+message Topic {
+    string          id         = 1;
+    string          name       = 2;
+    string          user_id    = 3;
+    repeated Topic  subtopics  = 4;
+}
+
+message TopicResponse {
+    bool   success = 1;
+    string message = 2;
+    Topic  topic   = 3;
+}
+
+message ListTopicsRequest {
+    string user_id = 1;
+}
+
+message ListTopicsResponse {
+    repeated Topic topics = 1;
+}

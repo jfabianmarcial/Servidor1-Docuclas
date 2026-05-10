@@ -1,0 +1,46 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/proto-gen",
+    "crates/common",
+    "crates/pdf-classifier",
+    "services/auth-service",
+    "services/doc-service",
+    "services/topic-service",
+    "services/admin-service",
+]
+
+[workspace.dependencies]
+# gRPC / Protobuf
+tonic = "0.13"
+tonic-build = "0.13"
+prost = "0.13"
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# MongoDB
+mongodb = "3"
+
+# Serialización
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# JWT
+jsonwebtoken = "9"
+
+# Errores
+thiserror = "2"
+anyhow = "1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Utilidades
+uuid = { version = "1", features = ["v4"] }
+bcrypt = "0.17"
+chrono = { version = "0.4", features = ["serde"] }
+dotenv = "0.15"
+futures = "0.3"
+bytes = "1"
