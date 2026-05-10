@@ -3,6 +3,7 @@ use mongodb::{Client, options::ClientOptions};
 use proto_gen::auth::auth_service_server::AuthServiceServer;
 use tonic::transport::Server;
 use tracing::info;
+use std::env;
 
 mod handlers;
 mod models;
@@ -22,7 +23,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Conectado a MongoDB Atlas: {}", config.mongo_db_name);
 
-    let addr = "0.0.0.0:50051".parse()?;
+    let port = env::var("PORT").unwrap_or_else(|_| "50051".to_string());
+    let addr = format!("0.0.0.0:{}", port).parse()?;
+
     let auth_service = server::AuthServiceImpl::new(&db, config);
 
     info!("Auth Service escuchando en {}", addr);
@@ -33,4 +36,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     Ok(())
-}
+}   
