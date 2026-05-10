@@ -1,0 +1,60 @@
+services:
+  - type: web
+    name: auth-service
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: ./auth-service
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: scidocs
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION
+        value: "86400"
+
+  - type: web
+    name: topic-service
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: ./topic-service
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: scidocs
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION
+        value: "86400"
+
+  - type: web
+    name: doc-service
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: ./doc-service
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: scidocs
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION
+        value: "86400"
+
+  - type: web
+    name: admin-service
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: ./admin-service
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: scidocs
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION
+        value: "86400"
