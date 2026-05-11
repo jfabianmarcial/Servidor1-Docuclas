@@ -1,5 +1,6 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use std::env;
 
 #[derive(Debug, Serialize)]
 pub struct TopicInput {
@@ -25,6 +26,9 @@ pub async fn classify_document(
     text:   &str,
     topics: Vec<TopicInput>,
 ) -> Result<ClassifyResponse> {
+    let classifier_url = env::var("CLASSIFIER_URL")
+        .unwrap_or_else(|_| "http://localhost:8090".to_string());
+
     let client = reqwest::Client::new();
 
     let req = ClassifyRequest {
@@ -33,7 +37,7 @@ pub async fn classify_document(
     };
 
     let response = client
-        .post("http://localhost:8090/classify")
+        .post(format!("{}/classify", classifier_url))
         .json(&req)
         .send()
         .await?
