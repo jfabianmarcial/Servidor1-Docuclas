@@ -4,7 +4,7 @@ import { DocumentService } from '../proto/document_pb';
 import type { Document } from '../types/index.ts';
 
 const transport = createGrpcWebTransport({
-    baseUrl: 'http://localhost:8080',
+    baseUrl: 'https://docuclas-envoy.onrender.com',
 });
 
 const client = createClient(DocumentService, transport);

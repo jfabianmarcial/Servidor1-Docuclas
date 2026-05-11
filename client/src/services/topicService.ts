@@ -4,7 +4,7 @@ import { TopicService } from '../proto/topic_pb';
 import type { Topic } from '../types/index.ts';
 
 const transport = createGrpcWebTransport({
-    baseUrl: 'http://localhost:8080',
+    baseUrl: 'https://docuclas-envoy.onrender.com',
 });
 
 const client = createClient(TopicService, transport);
