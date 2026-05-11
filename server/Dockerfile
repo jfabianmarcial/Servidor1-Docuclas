@@ -1,21 +1,16 @@
-FROM rust:1.95 as builder
+FROM rust:1.95 as rust-builder
 
-WORKDIR /app
+WORKDIR /app/server
 
-# Copiar workspace
-COPY Cargo.toml .
-COPY crates/ crates/
-COPY services/ services/
-COPY proto/ proto/
+COPY server/Cargo.toml .
+COPY server/crates/ crates/
+COPY server/services/ services/
+COPY server/proto/ proto/
 
-# Instalar protoc
 RUN apt-get update && apt-get install -y protobuf-compiler
-
-# Compilar todos los servicios
 RUN cargo build --release
 
-# Imagen final ligera
-FROM debian:bookworm-slim
+FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y \
     libssl3 \
@@ -24,12 +19,23 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copiar binarios compilados
-COPY --from=builder /app/target/release/auth-service .
-COPY --from=builder /app/target/release/topic-service .
-COPY --from=builder /app/target/release/doc-service .
-COPY --from=builder /app/target/release/admin-service .
+# Copiar binarios Rust
+COPY --from=rust-builder /app/server/target/release/auth-service .
+COPY --from=rust-builder /app/server/target/release/topic-service .
+COPY --from=rust-builder /app/server/target/release/doc-service .
+COPY --from=rust-builder /app/server/target/release/admin-service .
 
-# Por defecto corre auth-service
-# Se sobreescribe con la variable SERVICE_NAME
-CMD ["./auth-service"]
+# Instalar dependencias Python
+COPY classifier/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Pre-descargar modelo
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')"
+
+COPY classifier/main.py .
+
+# Script de inicio
+COPY server/start-services.sh .
+RUN chmod +x start-services.sh
+
+CMD ["./start-services.sh"]
