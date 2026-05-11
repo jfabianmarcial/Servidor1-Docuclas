@@ -3,7 +3,6 @@ use mongodb::{Client, options::ClientOptions};
 use proto_gen::topic::topic_service_server::TopicServiceServer;
 use tonic::transport::Server;
 use tracing::info;
-use std::env;
 
 mod handlers;
 mod models;
@@ -23,9 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Conectado a MongoDB Atlas: {}", config.mongo_db_name);
 
-    let port = env::var("PORT").unwrap_or_else(|_| "50052".to_string());
-    let addr = format!("0.0.0.0:{}", port).parse()?;
-
+    let addr = "0.0.0.0:50052".parse()?;
     let topic_service = server::TopicServiceImpl::new(&db, config);
 
     info!("Topic Service escuchando en {}", addr);
