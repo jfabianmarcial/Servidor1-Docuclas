@@ -3,9 +3,8 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { AuthService } from '../proto/auth_pb';
 
 const transport = createGrpcWebTransport({
-    baseUrl: 'https://docuclas-envoy.onrender.com',
+    baseUrl: 'https://servidor1-docuclas.onrender.com',
 });
-
 const client = createClient(AuthService, transport);
 
 export const authService = {
