@@ -60,8 +60,8 @@ static_resources:
 
   clusters:
     - name: auth_service
-      connect_timeout: 0.25s
-      type: static
+      connect_timeout: 5s
+      type: logical_dns
       http2_protocol_options: {}
       lb_policy: round_robin
       load_assignment:
@@ -71,12 +71,12 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: 192.168.1.9
+                      address: servidor1-docuclas.onrender.com
                       port_value: 50051
 
     - name: topic_service
-      connect_timeout: 0.25s
-      type: static
+      connect_timeout: 5s
+      type: logical_dns
       http2_protocol_options: {}
       lb_policy: round_robin
       load_assignment:
@@ -86,12 +86,12 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: 192.168.1.9
+                      address: servidor1-docuclas.onrender.com
                       port_value: 50052
 
     - name: doc_service
-      connect_timeout: 0.25s
-      type: static
+      connect_timeout: 5s
+      type: logical_dns
       http2_protocol_options: {}
       lb_policy: round_robin
       load_assignment:
@@ -101,12 +101,12 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: 192.168.1.9
+                      address: servidor1-docuclas.onrender.com
                       port_value: 50053
 
     - name: admin_service
-      connect_timeout: 0.25s
-      type: static
+      connect_timeout: 5s
+      type: logical_dns
       http2_protocol_options: {}
       lb_policy: round_robin
       load_assignment:
@@ -116,5 +116,5 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: 192.168.1.9
+                      address: servidor1-docuclas.onrender.com
                       port_value: 50054
