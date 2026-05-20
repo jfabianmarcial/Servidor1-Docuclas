@@ -4,9 +4,8 @@ import { AdminService } from '../proto/admin_pb';
 import type { User } from '../types/index.ts';
 
 const transport = createGrpcWebTransport({
-    baseUrl: 'https://servidor1-docuclas.onrender.com',
+    baseUrl: 'https://servidor1-docuclas-production.up.railway.app',
 });
-
 const client = createClient(AdminService, transport);
 
 const getMeta = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` });

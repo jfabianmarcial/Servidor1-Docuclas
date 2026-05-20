@@ -4,7 +4,7 @@ import { DocumentService } from '../proto/document_pb';
 import type { Document } from '../types/index.ts';
 
 const transport = createGrpcWebTransport({
-    baseUrl: 'https://servidor1-docuclas.onrender.com',
+    baseUrl: 'https://servidor1-docuclas-production.up.railway.app',
 });
 
 const client = createClient(DocumentService, transport);

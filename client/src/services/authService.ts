@@ -3,7 +3,7 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { AuthService } from '../proto/auth_pb';
 
 const transport = createGrpcWebTransport({
-    baseUrl: 'https://servidor1-docuclas.onrender.com',
+    baseUrl: 'https://servidor1-docuclas-production.up.railway.app',
 });
 const client = createClient(AuthService, transport);
 
