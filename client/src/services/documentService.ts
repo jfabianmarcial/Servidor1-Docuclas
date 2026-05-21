@@ -2,17 +2,15 @@ import { createClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { DocumentService } from '../proto/document_pb';
 import type { Document } from '../types/index.ts';
-
-const transport = createGrpcWebTransport({
-    baseUrl: 'https://servidor1-docuclas-production.up.railway.app',
-});
-
-const client = createClient(DocumentService, transport);
+import { getAvailableServer } from './baseUrl';
 
 const getMeta = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` });
 
 export const documentService = {
     listDocuments: async (userId: string, topicId: string = ''): Promise<Document[]> => {
+        const baseUrl = await getAvailableServer();
+        const transport = createGrpcWebTransport({ baseUrl });
+        const client = createClient(DocumentService, transport);
         const res = await client.listDocuments({ userId, topicId }, { headers: getMeta() });
         return res.documents.map(d => ({
             documentId: d.documentId,
@@ -25,6 +23,9 @@ export const documentService = {
     },
 
     uploadDocument: async (userId: string, filename: string, content: Uint8Array): Promise<Document> => {
+        const baseUrl = await getAvailableServer();
+        const transport = createGrpcWebTransport({ baseUrl });
+        const client = createClient(DocumentService, transport);
         const res = await client.uploadDocument({ userId, filename, content }, { headers: getMeta() });
         const doc = res.document!;
         return {
@@ -38,6 +39,9 @@ export const documentService = {
     },
 
     downloadDocument: async (documentId: string, userId: string): Promise<{ filename: string; content: Uint8Array }> => {
+        const baseUrl = await getAvailableServer();
+        const transport = createGrpcWebTransport({ baseUrl });
+        const client = createClient(DocumentService, transport);
         const res = await client.downloadDocument({ documentId, userId }, { headers: getMeta() });
         return {
             filename: res.filename,
@@ -46,6 +50,9 @@ export const documentService = {
     },
 
     deleteDocument: async (documentId: string, userId: string): Promise<void> => {
+        const baseUrl = await getAvailableServer();
+        const transport = createGrpcWebTransport({ baseUrl });
+        const client = createClient(DocumentService, transport);
         await client.deleteDocument({ documentId, userId }, { headers: getMeta() });
     },
 };
