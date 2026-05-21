@@ -4,59 +4,74 @@ const SERVERS = [
     import.meta.env.VITE_SERVER_3,
 ].filter(Boolean);
 
+// Guarda qué servidores están marcados como "caídos" y cuándo falló
+const serverFailures: Map<string, number> = new Map();
+const COOLDOWN_MS = 30_000; // 30s antes de reintentar un servidor caído
+
 let currentIndex = 0;
 
-async function isServerAvailable(url: string): Promise<boolean> {
-    try {
-        // Usamos mode: 'no-cors' para evitar que el navegador bloquee la validación si Render responde con un 503 genérico
-        await fetch(`${url}/health`, {
-            method: 'GET',
-            mode: 'no-cors',
-            signal: AbortSignal.timeout(2000), // 2 segundos es suficiente para un ping
-        });
-        return true;
-    } catch {
+function isServerBlacklisted(url: string): boolean {
+    const failedAt = serverFailures.get(url);
+    if (!failedAt) return false;
+    // Si ya pasó el cooldown, lo rehabilitamos
+    if (Date.now() - failedAt > COOLDOWN_MS) {
+        serverFailures.delete(url);
         return false;
     }
+    return true;
 }
 
-export async function getAvailableServer(): Promise<string> {
+function markServerAsFailed(url: string) {
+    console.warn(`Marcando servidor como caído: ${url}`);
+    serverFailures.set(url, Date.now());
+}
+
+/**
+ * Devuelve el siguiente servidor que no esté en cooldown.
+ * Si todos están en cooldown, devuelve el primero de todas formas.
+ */
+export function getNextServer(): string {
     const total = SERVERS.length;
 
     for (let i = 0; i < total; i++) {
-        const index = currentIndex % total;
+        const index = (currentIndex + i) % total;
         const server = SERVERS[index];
 
-        // Avanzamos el puntero para la siguiente ronda preventivamente
-        currentIndex = (index + 1) % total;
-
-        const available = await isServerAvailable(server);
-        if (available) {
+        if (!isServerBlacklisted(server)) {
+            currentIndex = (index + 1) % total; // avanza para la próxima ronda
             console.log(`Round Robin → Servidor elegido [${index + 1}]: ${server}`);
             return server;
-        } else {
-            console.warn(`Servidor [${index + 1}] (${server}) no disponible, saltando...`);
         }
     }
 
-    console.error('Todos los servidores caídos, usando servidor 1 por defecto');
+    // Todos caídos: reseteamos y usamos el primero
+    console.error('Todos los servidores en cooldown, forzando servidor 1');
+    serverFailures.clear();
+    currentIndex = 1;
     return SERVERS[0];
 }
 
 /**
- * Función utilitaria para envolver llamadas gRPC. 
- * Si la llamada física falla (p.ej. caída repentina), intenta con otro servidor automáticamente.
+ * Envuelve llamadas gRPC con reintentos automáticos.
+ * Si falla, marca el servidor como caído y prueba el siguiente.
  */
-export async function executeGrpc<T>(operation: (baseUrl: string) => Promise<T>, retries = SERVERS.length): Promise<T> {
-    const baseUrl = await getAvailableServer();
+export async function executeGrpc<T>(
+    operation: (baseUrl: string) => Promise<T>,
+    retries = SERVERS.length
+): Promise<T> {
+    const baseUrl = getNextServer(); // síncrono, sin health check previo
+
     try {
         return await operation(baseUrl);
     } catch (error) {
-        console.error(`Error de red o CORS ejecutando en ${baseUrl}:`, error);
+        console.error(`Fallo en ${baseUrl}:`, error);
+        markServerAsFailed(baseUrl); // lo ponemos en cooldown
+
         if (retries > 1) {
-            console.log(`Reintentando operación en el siguiente servidor disponible...`);
-            return await executeGrpc(operation, retries - 1);
+            console.log(`Reintentando con otro servidor... (${retries - 1} intentos restantes)`);
+            return executeGrpc(operation, retries - 1);
         }
+
         throw error;
     }
 }
