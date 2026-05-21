@@ -20,3 +20,6 @@ bcrypt      = { workspace = true }
 chrono      = { workspace = true }
 dotenv      = { workspace = true }
 anyhow      = { workspace = true }
+tonic-web  = { workspace = true }
+tower-http = { workspace = true }
+http       = { workspace = true }

@@ -2,6 +2,9 @@ use common::Config;
 use mongodb::{Client, options::ClientOptions};
 use proto_gen::admin::admin_service_server::AdminServiceServer;
 use tonic::transport::Server;
+use tonic_web::GrpcWebLayer;
+use tower_http::cors::{CorsLayer, Any};
+use http::header::{AUTHORIZATION, CONTENT_TYPE, HeaderName};
 use tracing::info;
 
 mod handlers;
@@ -22,12 +25,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Conectado a MongoDB Atlas: {}", config.mongo_db_name);
 
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_headers([
+            AUTHORIZATION,
+            CONTENT_TYPE,
+            HeaderName::from_static("x-grpc-web"),
+            HeaderName::from_static("x-user-agent"),
+        ])
+        .allow_methods(Any);
+
     let addr = "0.0.0.0:50054".parse()?;
     let admin_service = server::AdminServiceImpl::new(&db, config);
 
     info!("Admin Service escuchando en {}", addr);
 
     Server::builder()
+        .accept_http1(true)
+        .layer(cors)
+        .layer(GrpcWebLayer::new())
         .add_service(AdminServiceServer::new(admin_service))
         .serve(addr)
         .await?;
