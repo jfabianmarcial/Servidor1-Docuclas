@@ -1,8 +1,8 @@
 const SERVERS = [
-    'https://servidor1-docuclas.onrender.com',
-    'https://servidor2-docuclas-1-zfuk.onrender.com',
-    'https://servidor3-docuclas.onrender.com',
-];
+    import.meta.env.VITE_SERVER_1,
+    import.meta.env.VITE_SERVER_2,
+    import.meta.env.VITE_SERVER_3,
+].filter(Boolean);
 
 let currentIndex = 0;
 
